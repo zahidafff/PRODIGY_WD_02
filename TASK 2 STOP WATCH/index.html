@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #460202, #130102);
+            color: #fff;
+        }
+
+        #stopwatch {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 300px;
+        }
+
+        #stopwatch h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #display {
+            font-size: 3em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        button#start {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        button#pause {
+            background-color: #ffc107;
+            color: #fff;
+        }
+
+        button#reset {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        button#lap {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        li {
+            font-size: 1.2em;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 5px;
+            border-radius: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Scrollbar Styling */
+        ul::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ul::-webkit-scrollbar-thumb {
+            background-color: #007bff;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="stopwatch">
+        <h1>Stopwatch</h1>
+        <div id="display">00:00:00</div>
+        <button id="start">Start</button>
+        <button id="pause">Pause</button>
+        <button id="reset">Reset</button>
+        <button id="lap">Lap</button>
+        <ul id="laps"></ul>
+    </div>
+
+    <script>
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval;
+        const display = document.getElementById('display');
+        const laps = document.getElementById('laps');
+
+        function timeToString(time) {
+            let date = new Date(time);
+            let hours = date.getUTCHours().toString().padStart(2, '0');
+            let minutes = date.getUTCMinutes().toString().padStart(2, '0');
+            let seconds = date.getUTCSeconds().toString().padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        function print(txt) {
+            display.innerHTML = txt;
+        }
+
+        function start() {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(function() {
+                elapsedTime = Date.now() - startTime;
+                print(timeToString(elapsedTime));
+            }, 1000);
+            showButton('PAUSE');
+        }
+
+        function pause() {
+            clearInterval(timerInterval);
+            showButton('START');
+        }
+
+        function reset() {
+            clearInterval(timerInterval);
+            print("00:00:00");
+            elapsedTime = 0;
+            laps.innerHTML = '';
+            showButton('START');
+        }
+
+        function lap() {
+            let lapTime = timeToString(elapsedTime);
+            let li = document.createElement('li');
+            li.innerText = lapTime;
+            laps.appendChild(li);
+        }
+
+        function showButton(buttonKey) {
+            const startButton = document.getElementById('start');
+            const pauseButton = document.getElementById('pause');
+
+            if (buttonKey === 'START') {
+                startButton.style.display = 'inline-block';
+                pauseButton.style.display = 'none';
+            } else {
+                startButton.style.display = 'none';
+                pauseButton.style.display = 'inline-block';
+            }
+        }
+
+        document.getElementById('start').addEventListener('click', start);
+        document.getElementById('pause').addEventListener('click', pause);
+        document.getElementById('reset').addEventListener('click', reset);
+        document.getElementById('lap').addEventListener('click', lap);
+
+        showButton('START');
+    </script>
+</body>
+</html>
